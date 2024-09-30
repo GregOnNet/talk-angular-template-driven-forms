@@ -1,0 +1,9 @@
+{
+  "name": "purchase-form-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/purchase-form-e2e/src",
+  "implicitDependencies": ["purchase-form"],
+  "// targets": "to see all targets run: nx show project purchase-form-e2e --web",
+  "targets": {}
+}

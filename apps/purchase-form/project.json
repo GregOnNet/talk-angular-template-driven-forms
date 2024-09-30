@@ -1,0 +1,83 @@
+{
+  "name": "purchase-form",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "apps/purchase-form/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:application",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/purchase-form",
+        "index": "apps/purchase-form/src/index.html",
+        "browser": "apps/purchase-form/src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "apps/purchase-form/tsconfig.app.json",
+        "assets": [
+          "apps/purchase-form/src/favicon.ico",
+          "apps/purchase-form/src/assets"
+        ],
+        "styles": ["apps/purchase-form/src/styles.css"],
+        "scripts": [],
+        "server": "apps/purchase-form/src/main.server.ts",
+        "prerender": true,
+        "ssr": {
+          "entry": "apps/purchase-form/server.ts"
+        }
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "purchase-form:build:production"
+        },
+        "development": {
+          "buildTarget": "purchase-form:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "buildTarget": "purchase-form:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/purchase-form/jest.config.ts"
+      }
+    }
+  }
+}
