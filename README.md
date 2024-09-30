@@ -1,8 +1,10 @@
 # Pride and Prejudice - Template Driven Forms
 
 ## The Demo
+> Feel free to play around with the demo application at: ???
 
-Feel free to play around with the demo application at: ???
+Welcome to "Toolazon".
+- The shopping app tailored to let you buy your frequently necessary tools and utilities to get your home projects done! 
 
 ## What's included?
 

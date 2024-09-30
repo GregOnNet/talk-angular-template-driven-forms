@@ -1,14 +1,28 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NxWelcomeComponent } from './nx-welcome.component';
+import { PrimeNGConfig } from 'primeng/api';
+import { Aura } from 'primeng/themes/aura';
 
 @Component({
   standalone: true,
-  imports: [NxWelcomeComponent, RouterModule],
+  imports: [RouterModule],
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  template: `
+    <header>
+      <h1 class="text-red-500">Toolazon</h1>
+    </header>
+  `,
 })
 export class AppComponent {
-  title = 'purchase-form';
+  constructor(private primengConfig: PrimeNGConfig) {
+    this.primengConfig.theme.set({
+      preset: Aura,
+      options: {
+        cssLayer: {
+          name: 'primeng',
+          order: 'tailwind-base, primeng, tailwind-utilities',
+        },
+      },
+    });
+  }
 }

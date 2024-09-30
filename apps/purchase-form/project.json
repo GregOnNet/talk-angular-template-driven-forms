@@ -13,8 +13,7 @@
         "outputPath": "dist/apps/purchase-form",
         "index": "apps/purchase-form/src/index.html",
         "browser": "apps/purchase-form/src/main.ts",
-        "polyfills": ["zone.js"],
-        "tsConfig": "apps/purchase-form/tsconfig.app.json",
+         "tsConfig": "apps/purchase-form/tsconfig.app.json",
         "assets": [
           "apps/purchase-form/src/favicon.ico",
           "apps/purchase-form/src/assets"
