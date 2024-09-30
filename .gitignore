@@ -38,5 +38,8 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# nx
 .nx/cache
+.nx/workspace-data
 .angular
+migrations.json
