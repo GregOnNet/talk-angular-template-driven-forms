@@ -13,7 +13,7 @@
           "error",
           {
             "type": "attribute",
-            "prefix": "app",
+            "prefix": "tz",
             "style": "camelCase"
           }
         ],
@@ -21,10 +21,16 @@
           "error",
           {
             "type": "element",
-            "prefix": "app",
+            "prefix": "tz",
             "style": "kebab-case"
           }
-        ]
+        ],
+        "@angular-eslint/component-suffix": {
+          "suffices": [
+            "View",
+            "Component"
+          ]
+        }
       }
     },
     {

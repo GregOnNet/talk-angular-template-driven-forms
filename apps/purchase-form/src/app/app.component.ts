@@ -11,6 +11,8 @@ import { Aura } from 'primeng/themes/aura';
     <header>
       <h1 class="text-red-500">Toolazon</h1>
     </header>
+
+    <router-outlet></router-outlet>
   `,
 })
 export class AppComponent {
