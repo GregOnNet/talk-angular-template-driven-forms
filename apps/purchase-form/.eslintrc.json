@@ -25,12 +25,15 @@
             "style": "kebab-case"
           }
         ],
-        "@angular-eslint/component-suffix": {
-          "suffices": [
-            "View",
-            "Component"
-          ]
-        }
+        "@angular-eslint/component-class-suffix": [
+          "warn",
+          {
+            "suffixes": [
+              "View",
+              "Component"
+            ]
+          }
+        ]
       }
     },
     {
