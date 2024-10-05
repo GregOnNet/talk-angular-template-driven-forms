@@ -18,12 +18,12 @@
     "@angular/router": "18.2.6",
     "@angular/ssr": "18.2.6",
     "@nx/angular": "19.8.2",
-    "canvas-confetti": "^1.9.3",
-    "express": "~4.18.2",
+    "canvas-confetti": "1.9.3",
+    "express": "4.21.0",
     "primeng": "18.0.0-beta.2",
-    "rxjs": "~7.8.0",
-    "tailwindcss-primeui": "^0.3.4",
-    "tslib": "^2.3.0"
+    "rxjs": "7.8.1",
+    "tailwindcss-primeui": "0.3.4",
+    "tslib": "2.7.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "18.2.6",
