@@ -1,29 +1,26 @@
 {
-  "name": "purchase-form",
+  "name": "toolazon",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
-  "sourceRoot": "apps/purchase-form/src",
+  "sourceRoot": "apps/toolazon/src",
   "tags": [],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/purchase-form",
-        "index": "apps/purchase-form/src/index.html",
-        "browser": "apps/purchase-form/src/main.ts",
-         "tsConfig": "apps/purchase-form/tsconfig.app.json",
-        "assets": [
-          "apps/purchase-form/src/favicon.ico",
-          "apps/purchase-form/src/assets"
-        ],
-        "styles": ["apps/purchase-form/src/styles.css"],
+        "outputPath": "dist/apps/toolazon",
+        "index": "apps/toolazon/src/index.html",
+        "browser": "apps/toolazon/src/main.ts",
+        "tsConfig": "apps/toolazon/tsconfig.app.json",
+        "assets": ["apps/toolazon/src/favicon.ico", "apps/toolazon/src/assets"],
+        "styles": ["apps/toolazon/src/styles.css"],
         "scripts": [],
-        "server": "apps/purchase-form/src/main.server.ts",
+        "server": "apps/toolazon/src/main.server.ts",
         "prerender": true,
         "ssr": {
-          "entry": "apps/purchase-form/server.ts"
+          "entry": "apps/toolazon/server.ts"
         }
       },
       "configurations": {
@@ -54,10 +51,10 @@
       "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
-          "buildTarget": "purchase-form:build:production"
+          "buildTarget": "toolazon:build:production"
         },
         "development": {
-          "buildTarget": "purchase-form:build:development"
+          "buildTarget": "toolazon:build:development"
         }
       },
       "defaultConfiguration": "development"
@@ -65,7 +62,7 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "buildTarget": "purchase-form:build"
+        "buildTarget": "toolazon:build"
       }
     },
     "lint": {
@@ -75,7 +72,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/purchase-form/jest.config.ts"
+        "jestConfig": "apps/toolazon/jest.config.ts"
       }
     }
   }

@@ -4,10 +4,7 @@
   "overrides": [
     {
       "files": ["*.ts"],
-      "extends": [
-        "plugin:@nx/angular",
-        "plugin:@angular-eslint/template/process-inline-templates"
-      ],
+      "extends": ["plugin:@nx/angular", "plugin:@angular-eslint/template/process-inline-templates"],
       "rules": {
         "@angular-eslint/directive-selector": [
           "error",
@@ -28,10 +25,7 @@
         "@angular-eslint/component-class-suffix": [
           "warn",
           {
-            "suffixes": [
-              "View",
-              "Component"
-            ]
+            "suffixes": ["View", "Component"]
           }
         ]
       }
