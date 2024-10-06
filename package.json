@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "nx run purchase-form:serve"
+    "start": "nx run toolazon:serve"
   },
   "private": true,
   "dependencies": {

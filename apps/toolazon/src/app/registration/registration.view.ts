@@ -1,7 +1,14 @@
-import { Component } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { ButtonModule } from 'primeng/button'
 import { RouterLink } from '@angular/router'
 import { InputTextModule } from 'primeng/inputtext'
+import { EmailAddressAvailabilityChecker } from './email-address-availability-client.service'
+
+export function createRegistrationForm() {
+  const client = inject(EmailAddressAvailabilityChecker)
+
+  console.log(client)
+}
 
 @Component({
   selector: 'tz-registration',
@@ -48,4 +55,6 @@ import { InputTextModule } from 'primeng/inputtext'
   `,
   imports: [ButtonModule, RouterLink, InputTextModule]
 })
-export default class RegistrationView {}
+export default class RegistrationView {
+  #registrationForm = createRegistrationForm()
+}

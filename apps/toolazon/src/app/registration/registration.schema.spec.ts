@@ -1,63 +1,7 @@
-import {
-  customAsync,
-  email,
-  forwardAsync,
-  nonEmpty,
-  objectAsync,
-  partialCheckAsync,
-  pipe,
-  pipeAsync,
-  safeParseAsync,
-  string
-} from 'valibot'
+import { safeParseAsync } from 'valibot'
 import { expect } from '@playwright/test'
-
-function isEmailFree(input: unknown): Promise<boolean> {
-  if (typeof input !== 'string') {
-    return Promise.resolve(false)
-  }
-
-  if (input === 'taken.email@address.com') {
-    return Promise.resolve(false)
-  }
-
-  return Promise.resolve(true)
-}
-
-const EmailVerificationSchema = pipeAsync(
-  objectAsync({
-    value: pipeAsync(
-      string('Please enter your email address.'),
-      nonEmpty('Your email address must not be empty.'),
-      email('Please enter a valid email address (e.g me@example.com).'),
-      customAsync(input => isEmailFree(input), 'The email address has already been taken.')
-    ),
-    verification: pipe(
-      string('Please verify your email address.'),
-      nonEmpty('Please verify your email address.')
-    )
-  }),
-  forwardAsync(
-    partialCheckAsync(
-      [['value'], ['verification']],
-      input => input.value === input.verification,
-      'The given email addresses do not match.'
-    ),
-    ['verification']
-  )
-)
-
-const RegistrationSchema = objectAsync({
-  firstname: pipe(
-    string('Please enter your firstname.'),
-    nonEmpty('Your firstname must not be empty.')
-  ),
-  lastname: pipe(
-    string('Please enter your lastname.'),
-    nonEmpty('Your lastname must not be empty.')
-  ),
-  email: EmailVerificationSchema
-})
+import { ICheckEmailAddressAvailability } from './contracts'
+import { createRegistrationSchema } from './registration.schema'
 
 describe('When the user does not provide a firstname', () => {
   it.each`
@@ -68,9 +12,10 @@ describe('When the user does not provide a firstname', () => {
   `(
     'yields failure "$issueMessage" when given "$noValue"',
     async ({ issueMessage, noValue }: { noValue: null | undefined | ''; issueMessage: string }) => {
+      const registrationSchema = createRegistrationSchema(jest.fn() as any)
       const formValue = { firstname: noValue }
 
-      const result = await safeParseAsync(RegistrationSchema, formValue)
+      const result = await safeParseAsync(registrationSchema, formValue)
 
       expect(result.success).toBeFalsy()
       expect(result.issues?.[0].message).toBe(issueMessage)
@@ -87,9 +32,11 @@ describe('When the user does not provide a lastname', () => {
   `(
     'yields failure "$issueMessage" when given "$noValue"',
     async ({ issueMessage, noValue }: { noValue: null | undefined | ''; issueMessage: string }) => {
+      const registrationSchema = createRegistrationSchema(jest.fn() as any)
+
       const formValue = { firstname: 'Alan', lastname: noValue }
 
-      const result = await safeParseAsync(RegistrationSchema, formValue)
+      const result = await safeParseAsync(registrationSchema, formValue)
 
       expect(result.success).toBeFalsy()
       expect(result.issues?.[0].message).toBe(issueMessage)
@@ -108,9 +55,17 @@ describe('When the user does not provide a valid email address', () => {
   `(
     'yields failure "$issueMessage" when given "$noValue"',
     async ({ issueMessage, noValue }: { noValue: null | undefined | ''; issueMessage: string }) => {
+      const emailCheckerMock = jest
+        .fn()
+        .mockImplementation(
+          () => ({ check: () => Promise.resolve(true) } satisfies ICheckEmailAddressAvailability)
+        ) as unknown as ICheckEmailAddressAvailability
+
+      const registrationSchema = createRegistrationSchema(emailCheckerMock)
+
       const formValue = { firstname: 'Alan', lastname: 'Turing', email: { value: noValue } }
 
-      const result = await safeParseAsync(RegistrationSchema, formValue)
+      const result = await safeParseAsync(registrationSchema, formValue)
 
       expect(result.success).toBeFalsy()
       expect(result.issues?.[0].message).toBe(issueMessage)
@@ -127,6 +82,12 @@ describe('When the user does not provide the email address verification', () => 
   `(
     'yields failure "$issueMessage" when given "$noValue"',
     async ({ issueMessage, noValue }: { noValue: null | undefined | ''; issueMessage: string }) => {
+      const emailCheckerMock: ICheckEmailAddressAvailability = {
+        check: jest.fn().mockResolvedValue(true)
+      }
+
+      const registrationSchema = createRegistrationSchema(emailCheckerMock)
+
       const formValue = {
         firstname: 'Alan',
         lastname: 'Turing',
@@ -136,7 +97,7 @@ describe('When the user does not provide the email address verification', () => 
         }
       }
 
-      const result = await safeParseAsync(RegistrationSchema, formValue)
+      const result = await safeParseAsync(registrationSchema, formValue)
 
       expect(result.success).toBeFalsy()
       expect(result.issues?.[0].message).toBe(issueMessage)
@@ -146,6 +107,12 @@ describe('When the user does not provide the email address verification', () => 
 
 describe('When the user types a another verified email address', () => {
   it('yields failure a failure message', async () => {
+    const emailCheckerMock: ICheckEmailAddressAvailability = {
+      check: jest.fn().mockResolvedValue(true)
+    }
+
+    const registrationSchema = createRegistrationSchema(emailCheckerMock)
+
     const formValue = {
       firstname: 'Alan',
       lastname: 'Turing',
@@ -155,7 +122,7 @@ describe('When the user types a another verified email address', () => {
       }
     }
 
-    const result = await safeParseAsync(RegistrationSchema, formValue)
+    const result = await safeParseAsync(registrationSchema, formValue)
 
     expect(result.success).toBeFalsy()
     expect(result.issues?.[0].message).toBe('The given email addresses do not match.')
@@ -164,6 +131,11 @@ describe('When the user types a another verified email address', () => {
 
 describe('When the email address has already been taken', () => {
   it('yields failure a failure message', async () => {
+    const emailCheckerMock: ICheckEmailAddressAvailability = {
+      check: jest.fn().mockResolvedValue(false)
+    }
+    const registrationSchema = createRegistrationSchema(emailCheckerMock)
+
     const formValue = {
       firstname: 'Alan',
       lastname: 'Turing',
@@ -172,7 +144,7 @@ describe('When the email address has already been taken', () => {
       }
     }
 
-    const result = await safeParseAsync(RegistrationSchema, formValue)
+    const result = await safeParseAsync(registrationSchema, formValue)
 
     expect(result.success).toBeFalsy()
     expect(result.issues?.[0].message).toBe('The email address has already been taken.')
