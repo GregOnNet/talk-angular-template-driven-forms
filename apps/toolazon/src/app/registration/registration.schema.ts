@@ -2,6 +2,7 @@ import {
   customAsync,
   email,
   forwardAsync,
+  InferOutput,
   nonEmpty,
   objectAsync,
   partialCheckAsync,
@@ -10,7 +11,7 @@ import {
   string
 } from 'valibot'
 
-import { ICheckEmailAddressAvailability } from './contracts/i-check-email-address.availability'
+import { ICheckEmailAddressAvailability } from './contracts'
 
 /*
  *
@@ -31,6 +32,8 @@ export function createRegistrationSchema(checker: ICheckEmailAddressAvailability
     email: createEmailVerificationSchema(checker)
   })
 }
+
+export type Registration = InferOutput<ReturnType<typeof createRegistrationSchema>>
 
 /*
  *
