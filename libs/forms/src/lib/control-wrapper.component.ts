@@ -56,21 +56,6 @@ export class ControlWrapperComponent implements AfterContentInit {
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe()
-
-    const valueChanges$ = this.#getControl().valueChanges
-
-    // A ngModelGroup has no statusChanges stream available and yields null
-    // We break in case of a ngModelGroup
-    if (!valueChanges$) {
-      return
-    }
-
-    valueChanges$
-      .pipe(
-        tap(() => this.isTouched.set(this.#getControl().touched || false)),
-        takeUntilDestroyed(this.#destroyRef)
-      )
-      .subscribe()
   }
 
   #getControl() {
@@ -100,11 +85,4 @@ export class ControlWrapperComponent implements AfterContentInit {
   #clearError() {
     this.validationError.set('')
   }
-}
-
-function hasOwnProperty<X extends object, Y extends PropertyKey>(
-  candidate: X | undefined | null,
-  propertyKey: Y
-): candidate is X & Record<Y, unknown> {
-  return !candidate ? false : Object.prototype.hasOwnProperty.call(candidate, propertyKey)
 }
