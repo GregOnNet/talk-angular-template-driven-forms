@@ -4,6 +4,7 @@ import { NgControl } from '@angular/forms'
 import { tap } from 'rxjs'
 import { FormSchemaDirective } from './form-schema.directive'
 import { getControlPath } from './get-control-path'
+import { keyof, LooseObjectSchema } from 'valibot'
 
 @Directive({
   selector: '[ngModel]',
@@ -18,6 +19,30 @@ export class NgModelErrorSubscriberDirective implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.#bindFormSettingErrors().pipe(takeUntilDestroyed(this.#destroyRef)).subscribe()
+
+    this.#ngControl
+      .valueChanges!.pipe(
+        tap(() => {
+          const controlPathSegments = getControlPath(
+            this.#formSchema.ngForm.control,
+            this.#ngControl.name?.toString() || '',
+            this.#ngControl.control
+          ).split('.')
+
+          const isPartOfTheSchema = this.#isControlPartOftheSchema(
+            controlPathSegments,
+            this.#formSchema.formSchema() as any
+          )
+
+          if (!isPartOfTheSchema) {
+            throw new Error(
+              `NgControl "${controlPathSegments.join(' ~> ')}" does not match the given schema.`
+            )
+          }
+        }),
+        takeUntilDestroyed(this.#destroyRef)
+      )
+      .subscribe()
   }
 
   #bindFormSettingErrors() {
@@ -34,5 +59,25 @@ export class NgModelErrorSubscriberDirective implements AfterViewInit {
         if (error) this.#ngControl.control?.setErrors(error)
       })
     )
+  }
+
+  #isControlPartOftheSchema(
+    controlPathSegments: string[],
+    schema: LooseObjectSchema<any, any>
+  ): boolean {
+    const [key, ...rest] = controlPathSegments
+
+    const schemaPicklist = keyof(schema as any)
+    const keys: string[] = schemaPicklist.options
+
+    if (keys.includes(key) && rest.length === 0) {
+      return true
+    }
+
+    if (keys.includes(key)) {
+      return this.#isControlPartOftheSchema(rest, schema.entries[key])
+    }
+
+    return false
   }
 }
