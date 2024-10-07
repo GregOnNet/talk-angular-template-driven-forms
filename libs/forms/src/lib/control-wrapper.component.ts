@@ -32,12 +32,12 @@ export class ControlWrapperComponent implements AfterContentInit {
   protected ngModel = contentChild(NgModel)
   protected ngModelGroup = inject(NgModelGroup, { optional: true, skipSelf: true })
 
-  protected isTouched = signal(false)
+  protected isDirty = signal(false)
 
   protected validationError = signal('')
 
   protected validationErrorToShow = computed(() =>
-    this.#formSchema.formIsSubmitted() || this.isTouched() ? this.validationError() : ''
+    this.#formSchema.formIsSubmitted() || this.isDirty() ? this.validationError() : ''
   )
 
   ngAfterContentInit(): void {
@@ -52,7 +52,7 @@ export class ControlWrapperComponent implements AfterContentInit {
     statusChanges$
       .pipe(
         tap(status => (status === 'INVALID' ? this.#setError() : this.#clearError())),
-        tap(() => this.isTouched.set(this.#getControl().touched || false)),
+        tap(() => this.isDirty.set(this.#getControl().dirty || false)),
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe()

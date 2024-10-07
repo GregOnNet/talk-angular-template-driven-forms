@@ -46,6 +46,7 @@ export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unkno
     this.validateFormValuesOnValueChange()
     this.emitSafeSubmitWhenValidationSucceeds()
 
+    // TODO: Extract in to method
     this.ngForm.onReset = () => {
       this.ngForm.onReset()
       this.formIsSubmitted.set(false)
@@ -67,6 +68,7 @@ export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unkno
       .pipe(
         switchMap(() => safeParseAsync(this.formSchema(), this.ngForm.value)),
         tap(result => (result.success ? this.safeSubmit.emit(result.output) : {})),
+        // TODO: Extract since is another concern having nothing to do with validation
         tap(() => this.formIsSubmitted.set(true)),
         takeUntilDestroyed(this.#destroyRef)
       )
