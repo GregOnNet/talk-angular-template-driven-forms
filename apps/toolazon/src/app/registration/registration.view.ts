@@ -15,6 +15,7 @@ import { createRegistrationSchema, Registration } from './registration.schema'
       class="grid p-4 gap-4"
       [formSchema]="registrationSchema"
       (valueChanged)="registrationModel.set($event)"
+      (safeSubmit)="register($event)"
       [ngFormOptions]="{ updateOn: 'blur' }"
     >
       <fieldset
@@ -72,6 +73,7 @@ import { createRegistrationSchema, Registration } from './registration.schema'
       </div>
 
       <p-button
+        type="submit"
         label="Register"
         routerLink="/shopping/list"
       ></p-button>
@@ -84,4 +86,8 @@ export default class RegistrationView {
 
   protected registrationSchema = createRegistrationSchema(this.#emailAddressChecker)
   protected registrationModel = signal<PartialDeep<Registration>>({})
+
+  register(registration: Registration) {
+    console.log(registration)
+  }
 }

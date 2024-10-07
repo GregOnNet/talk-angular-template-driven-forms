@@ -53,7 +53,6 @@ export class ControlWrapperComponent implements AfterContentInit {
       .pipe(
         tap(status => (status === 'INVALID' ? this.#setError() : this.#clearError())),
         tap(() => this.isDirty.set(this.#getControl().dirty || false)),
-        tap(() => console.log('Status Change', this.#getControl().name)),
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe()
@@ -77,7 +76,6 @@ export class ControlWrapperComponent implements AfterContentInit {
     const ngModel = this.ngModel()
 
     if (ngModel) {
-      console.log('[control-wrapper -> ngModel]', ngModel.name)
       return ngModel
     }
 
@@ -91,11 +89,6 @@ export class ControlWrapperComponent implements AfterContentInit {
   }
 
   #setError() {
-    console.log(
-      '[control-wrapper] -> ngModel',
-      this.#getControl().name,
-      this.#getControl().control.errors
-    )
     const errorMessage = this.#getControl().control.errors?.['schemaViolation']
 
     if (errorMessage) {

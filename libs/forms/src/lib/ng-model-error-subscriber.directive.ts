@@ -27,14 +27,6 @@ export class NgModelErrorSubscriberDirective implements AfterViewInit {
           this.#ngControl.control
         )
 
-        console.log(
-          'DDD',
-          this.#ngControl.name,
-          !!this.#ngControl.control,
-          controlPath,
-          errors?.[controlPath]
-        )
-
         const error = errors?.[controlPath] ?? null
 
         if (error) this.#ngControl.control?.setErrors(error)
