@@ -55,7 +55,7 @@ The shopping app to let you buy your frequently necessary tools and utilities to
 
 - A unidirectional dataflow
 - Typ(o) safety
-- Vest validation suites
+- Valibot Validation
 - Async validators
 - Declarative and reactive ViewModels
 

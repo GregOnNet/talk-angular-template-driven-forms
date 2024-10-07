@@ -65,7 +65,7 @@ function createEmailVerificationSchema(
 ) {
   return pipeAsync(
     objectAsync({
-      value: pipeAsync(
+      email: pipeAsync(
         EmailValidationSchema,
         createEmailAddressAvailabilitySchema(emailAddressAvailabilityChecker)
       ),
@@ -76,8 +76,8 @@ function createEmailVerificationSchema(
     }),
     forwardAsync(
       partialCheckAsync(
-        [['value'], ['verification']],
-        input => input.value === input.verification,
+        [['email'], ['verification']],
+        input => input.email === input.verification,
         'The given email addresses do not match.'
       ),
       ['verification']

@@ -50,6 +50,7 @@ export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unkno
       .pipe(
         tap(v => console.log(v)),
         switchMap(() => this.validate()),
+        tap(result => console.log('Errors', result)),
         tap(result => this.errors$.next(result)),
         takeUntilDestroyed(this.#destroyRef)
       )
@@ -78,7 +79,7 @@ export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unkno
 
       if (!path) return record
 
-      return Object.assign(record, { [path]: { auto: error.message } })
+      return Object.assign(record, { [path]: { schemaViolation: error.message } })
     }, {})
   }
 }

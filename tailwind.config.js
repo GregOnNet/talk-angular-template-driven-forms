@@ -1,8 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./apps/**/src/**/*.{html,ts}'],
+  content: ['./{apps,libs}/**/src/**/*.{html,ts}'],
   theme: {
-    extend: {},
+    extend: {}
   },
-  plugins: [require('tailwindcss-primeui')],
-};
+  plugins: [require('tailwindcss-primeui')]
+}

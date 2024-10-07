@@ -12,20 +12,29 @@ import { getControlPath } from './get-control-path'
 export class NgModelErrorSubscriberDirective implements AfterViewInit {
   readonly #destroyRef = inject(DestroyRef)
   readonly #ngControl = inject(NgControl)
-  readonly #formSetting = inject(FormSchemaDirective)
+  readonly #formSchema = inject(FormSchemaDirective)
 
   ngAfterViewInit(): void {
     this.#bindFormSettingErrors().pipe(takeUntilDestroyed(this.#destroyRef)).subscribe()
   }
 
   #bindFormSettingErrors() {
-    return this.#formSetting.errors$.pipe(
+    return this.#formSchema.errors$.pipe(
       tap(errors => {
         const controlPath = getControlPath(
-          this.#formSetting.ngForm.control,
+          this.#formSchema.ngForm.control,
           this.#ngControl.name?.toString() || '',
           this.#ngControl.control
         )
+
+        console.log(
+          'DDD',
+          this.#ngControl.name,
+          !!this.#ngControl.control,
+          controlPath,
+          errors?.[controlPath]
+        )
+
         const error = errors?.[controlPath] ?? null
 
         if (error) this.#ngControl.control?.setErrors(error)

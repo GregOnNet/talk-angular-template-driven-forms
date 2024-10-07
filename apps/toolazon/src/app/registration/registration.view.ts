@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router'
 import { InputTextModule } from 'primeng/inputtext'
 import { PartialDeep } from 'type-fest'
 import { EmailAddressAvailabilityChecker } from './email-address-availability-client.service'
-import { provideFormsSetting } from '@toolazon/forms'
+import { provideFormSchema } from '@toolazon/forms'
 import { createRegistrationSchema, Registration } from './registration.schema'
 
 @Component({
@@ -15,8 +15,12 @@ import { createRegistrationSchema, Registration } from './registration.schema'
       class="grid p-4 gap-4"
       [formSchema]="registrationSchema"
       (valueChanged)="registrationModel.set($event)"
+      [ngFormOptions]="{ updateOn: 'blur' }"
     >
-      <fieldset class="flex flex-col gap-2">
+      <fieldset
+        class="flex flex-col gap-2"
+        control-wrapper
+      >
         <label for="firstname">Firstname</label>
         <input
           pInputText
@@ -26,7 +30,10 @@ import { createRegistrationSchema, Registration } from './registration.schema'
         />
       </fieldset>
 
-      <fieldset class="flex flex-col gap-2">
+      <fieldset
+        class="flex flex-col gap-2"
+        control-wrapper
+      >
         <label for="lastname">Lastname</label>
         <input
           pInputText
@@ -36,26 +43,33 @@ import { createRegistrationSchema, Registration } from './registration.schema'
         />
       </fieldset>
 
-      <ng-container ngModelGroup="email">
-        <fieldset class="flex flex-col gap-2">
+      <div ngModelGroup="email">
+        <fieldset
+          class="flex flex-col gap-2"
+          control-wrapper
+        >
           <label for="email">E-Mail</label>
           <input
             pInputText
-            [ngModel]="registrationModel().email?.value"
-            name="value"
+            [ngModel]="registrationModel().email?.email"
+            name="email"
             id="email"
           />
         </fieldset>
 
-        <fieldset class="flex flex-col gap-2">
+        <fieldset
+          class="flex flex-col gap-2"
+          control-wrapper
+        >
           <label for="email_verification">E-Mail verification</label>
           <input
             pInputText
             [ngModel]="registrationModel().email?.verification"
             name="verification"
             id="email_verification"
-          /></fieldset
-      ></ng-container>
+          />
+        </fieldset>
+      </div>
 
       <p-button
         label="Register"
@@ -63,7 +77,7 @@ import { createRegistrationSchema, Registration } from './registration.schema'
       ></p-button>
     </form>
   `,
-  imports: [ButtonModule, RouterLink, InputTextModule, provideFormsSetting()]
+  imports: [ButtonModule, RouterLink, InputTextModule, provideFormSchema()]
 })
 export default class RegistrationView {
   #emailAddressChecker = inject(EmailAddressAvailabilityChecker)
