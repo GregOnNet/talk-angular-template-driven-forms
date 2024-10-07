@@ -74,11 +74,20 @@ import { NgForm } from '@angular/forms'
         </fieldset>
       </div>
 
-      <p-button
-        (click)="navigateNext()"
-        type="submit"
-        label="Register"
-      ></p-button>
+      <div class="flex gap-2">
+        <p-button
+          tabindex="1"
+          (click)="form.reset()"
+          severity="secondary"
+          label="Reset"
+        ></p-button>
+
+        <p-button
+          (click)="navigateNext()"
+          type="submit"
+          label="Register"
+        ></p-button>
+      </div>
     </form>
   `,
   imports: [ButtonModule, RouterLink, InputTextModule, provideFormSchema()]

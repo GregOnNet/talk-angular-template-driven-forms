@@ -43,39 +43,45 @@ export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unkno
   formIsSubmitted = signal(false)
 
   ngAfterViewInit(): void {
-    this.validateFormValuesOnValueChange()
-    this.emitSafeSubmitWhenValidationSucceeds()
-
-    // TODO: Extract in to method
-    this.ngForm.onReset = () => {
-      this.ngForm.onReset()
-      this.formIsSubmitted.set(false)
-    }
+    this.validateOnFormValueChanges()
+    this.handleNgSubmit()
   }
 
-  private validateFormValuesOnValueChange() {
+  private validateOnFormValueChanges() {
     outputToObservable(this.valueChanged)
       .pipe(
-        switchMap(() => this.validate()),
+        switchMap(() => this.#validate()),
         tap(result => this.schemaViolations$.next(result)),
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe()
   }
 
-  private emitSafeSubmitWhenValidationSucceeds() {
+  private handleNgSubmit() {
     this.ngForm.ngSubmit
       .pipe(
-        switchMap(() => safeParseAsync(this.formSchema(), this.ngForm.value)),
-        tap(result => (result.success ? this.safeSubmit.emit(result.output) : {})),
-        // TODO: Extract since is another concern having nothing to do with validation
-        tap(() => this.formIsSubmitted.set(true)),
+        tap(async () => await this.#tryEmitSafeSubmit()),
+        tap(() => this.#indicateFormIsSubmitted()),
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe()
   }
 
-  private async validate(): Promise<Record<string, { schemaViolation: string }> | null> {
+  async #tryEmitSafeSubmit() {
+    const result = await safeParseAsync(this.formSchema(), this.ngForm.value)
+
+    if (!result.success) {
+      return
+    }
+
+    this.safeSubmit.emit(result.output)
+  }
+
+  #indicateFormIsSubmitted() {
+    this.formIsSubmitted.set(true)
+  }
+
+  async #validate(): Promise<Record<string, { schemaViolation: string }> | null> {
     const result = await safeParseAsync(this.formSchema(), this.ngForm.value)
 
     if (result.success) {
