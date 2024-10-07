@@ -1,4 +1,4 @@
-import { AfterViewInit, DestroyRef, Directive, inject } from '@angular/core'
+import { AfterViewInit, DestroyRef, Directive, inject, input } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgControl } from '@angular/forms'
 import { tap } from 'rxjs'
@@ -13,6 +13,8 @@ export class NgModelErrorSubscriberDirective implements AfterViewInit {
   readonly #destroyRef = inject(DestroyRef)
   readonly #ngControl = inject(NgControl)
   readonly #formSchema = inject(FormSchemaDirective)
+
+  name = input.required<NgControl['name']>()
 
   ngAfterViewInit(): void {
     this.#bindFormSettingErrors().pipe(takeUntilDestroyed(this.#destroyRef)).subscribe()
