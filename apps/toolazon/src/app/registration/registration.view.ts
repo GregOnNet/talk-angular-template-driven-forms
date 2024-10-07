@@ -2,8 +2,9 @@ import { Component, inject, signal } from '@angular/core'
 import { ButtonModule } from 'primeng/button'
 import { RouterLink } from '@angular/router'
 import { InputTextModule } from 'primeng/inputtext'
+import { PartialDeep } from 'type-fest'
 import { EmailAddressAvailabilityChecker } from './email-address-availability-client.service'
-import { DeepPartial, provideFormsSetting } from '@toolazon/forms'
+import { provideFormsSetting } from '@toolazon/forms'
 import { createRegistrationSchema, Registration } from './registration.schema'
 
 @Component({
@@ -12,7 +13,7 @@ import { createRegistrationSchema, Registration } from './registration.schema'
   template: `
     <form
       class="grid p-4 gap-4"
-      [schema]="registrationSchema"
+      [formSchema]="registrationSchema"
       (valueChanged)="registrationModel.set($event)"
     >
       <fieldset class="flex flex-col gap-2">
@@ -68,5 +69,5 @@ export default class RegistrationView {
   #emailAddressChecker = inject(EmailAddressAvailabilityChecker)
 
   protected registrationSchema = createRegistrationSchema(this.#emailAddressChecker)
-  protected registrationModel = signal<DeepPartial<Registration>>({})
+  protected registrationModel = signal<PartialDeep<Registration>>({})
 }

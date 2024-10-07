@@ -1,4 +1,12 @@
-import { AfterViewInit, DestroyRef, Directive, inject, input, output } from '@angular/core'
+import {
+  AfterViewInit,
+  DestroyRef,
+  Directive,
+  inject,
+  input,
+  InputSignal,
+  output
+} from '@angular/core'
 import {
   outputFromObservable,
   outputToObservable,
@@ -6,30 +14,28 @@ import {
 } from '@angular/core/rxjs-interop'
 import { NgForm } from '@angular/forms'
 import { BehaviorSubject, debounceTime, switchMap, tap } from 'rxjs'
-import { BaseSchemaAsync, safeParseAsync } from 'valibot'
+import { BaseIssue, BaseSchemaAsync, InferOutput, safeParseAsync } from 'valibot'
+import { PartialDeep } from 'type-fest'
 
-type InferSchema<TSchema = any> = TSchema extends BaseSchemaAsync<
-  infer TInput,
-  infer TOutput,
-  infer TIssue
->
-  ? BaseSchemaAsync<TInput, TOutput, TIssue>
-  : never
+type InferInputSignalValue<TSignal> = TSignal extends InputSignal<infer TValue> ? TValue : never
 
 @Directive({
-  // Hook in to <form>-elements providing a setting-Attribute.
-  // eslint-disable-next-line @angular-eslint/directive-selector
-  selector: 'form',
+  selector: '[formSchema]',
   standalone: true
 })
-export class FormSettingDirective<TSchema> implements AfterViewInit {
+export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unknown>>
+  implements AfterViewInit
+{
   #destroyRef = inject(DestroyRef)
   ngForm = inject(NgForm, { self: true })
 
-  schema = input.required<InferSchema<TSchema>>()
+  formSchema = input.required<BaseSchemaAsync<TInput, TOutput, TIssue>>()
 
-  safeSubmit = output<any>()
-  valueChanged = outputFromObservable<any>(this.ngForm.valueChanges!.pipe(debounceTime(0)))
+  safeSubmit = output<InferOutput<InferInputSignalValue<typeof this.formSchema>>>()
+
+  valueChanged = outputFromObservable<
+    PartialDeep<InferOutput<InferInputSignalValue<typeof this.formSchema>>>
+  >(this.ngForm.valueChanges!.pipe(debounceTime(0)))
 
   errors$ = new BehaviorSubject<Record<string, { auto: string }> | null>(null)
 
@@ -52,7 +58,7 @@ export class FormSettingDirective<TSchema> implements AfterViewInit {
   private emitSafeSubmitWhenValidationSucceeds() {
     this.ngForm.ngSubmit
       .pipe(
-        switchMap(() => safeParseAsync(this.schema(), this.ngForm.value)),
+        switchMap(() => safeParseAsync(this.formSchema(), this.ngForm.value)),
         tap(result => (result.success ? this.safeSubmit.emit(result.output) : {})),
         takeUntilDestroyed(this.#destroyRef)
       )
@@ -60,7 +66,7 @@ export class FormSettingDirective<TSchema> implements AfterViewInit {
   }
 
   private async validate(): Promise<Record<string, { auto: string }> | null> {
-    const result = await safeParseAsync(this.schema(), this.ngForm.value)
+    const result = await safeParseAsync(this.formSchema(), this.ngForm.value)
 
     if (result.success) {
       return null

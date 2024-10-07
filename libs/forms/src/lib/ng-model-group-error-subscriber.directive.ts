@@ -8,57 +8,56 @@ import {
   input,
   model,
   OnDestroy,
-  ViewContainerRef,
-} from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { tap } from 'rxjs';
-import { FormSettingDirective } from './form-setting.directive';
+  ViewContainerRef
+} from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { tap } from 'rxjs'
+import { FormSchemaDirective } from './form-schema.directive'
 
 @Component({
   standalone: true,
 
-  template: '{{ text() }}',
+  template: '{{ text() }}'
 })
 export class ErrorSummaryComponent {
-  text = model.required<string>();
+  text = model.required<string>()
 }
 
 @Directive({
-  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: '[ngModelGroup]',
-  standalone: true,
+  standalone: true
 })
 export class NgModelGroupErrorSubscriberDirective implements AfterViewInit, OnDestroy {
-  readonly #destroyRef = inject(DestroyRef);
-  readonly #viewContainerRef = inject(ViewContainerRef);
+  readonly #destroyRef = inject(DestroyRef)
+  readonly #viewContainerRef = inject(ViewContainerRef)
 
-  readonly #formSetting = inject(FormSettingDirective);
+  readonly #formSetting = inject(FormSchemaDirective)
 
-  #componentRef: ComponentRef<ErrorSummaryComponent> | undefined;
+  #componentRef: ComponentRef<ErrorSummaryComponent> | undefined
 
-  name = input('', { alias: 'ngModelGroup' });
+  name = input('', { alias: 'ngModelGroup' })
 
   ngAfterViewInit(): void {
-    this.#bindFormSettingErrors().pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
+    this.#bindFormSettingErrors().pipe(takeUntilDestroyed(this.#destroyRef)).subscribe()
   }
 
   ngOnDestroy(): void {
-    this.#componentRef?.destroy();
+    this.#componentRef?.destroy()
   }
 
   #bindFormSettingErrors() {
     return this.#formSetting.errors$.pipe(
-      tap((errors) => {
-        const error = errors?.[this.name()] ?? null;
+      tap(errors => {
+        const error = errors?.[this.name()] ?? null
 
         if (error) {
-          this.#componentRef?.destroy(); // Avoid component is rendered multiple times if error is already displayed
-          this.#componentRef = this.#viewContainerRef.createComponent(ErrorSummaryComponent);
-          this.#componentRef.instance.text.set(error.auto);
+          this.#componentRef?.destroy() // Avoid component is rendered multiple times if error is already displayed
+          this.#componentRef = this.#viewContainerRef.createComponent(ErrorSummaryComponent)
+          this.#componentRef.instance.text.set(error.auto)
         } else {
-          this.#componentRef?.destroy();
+          this.#componentRef?.destroy()
         }
       })
-    );
+    )
   }
 }
