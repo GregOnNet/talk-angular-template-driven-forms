@@ -7,7 +7,7 @@ import {
   inject,
   signal
 } from '@angular/core'
-import { ControlContainer, NgForm, NgModel, NgModelGroup } from '@angular/forms'
+import { NgModel, NgModelGroup } from '@angular/forms'
 import { tap } from 'rxjs'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormSchemaDirective } from './form-schema.directive'
@@ -18,12 +18,11 @@ import { FormSchemaDirective } from './form-schema.directive'
   template: `
     <ng-content></ng-content>
     @if (validationErrorToShow(); as text) {
-    <small class="border-2 border-red-400 text-red-100 rounded p-2 font-medium">
+    <span class="text-red-500 rounded mb-4 ">
       {{ text }}
-    </small>
+    </span>
     }
-  `,
-  viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
+  `
 })
 export class ControlWrapperComponent implements AfterContentInit {
   #destroyRef = inject(DestroyRef)
@@ -66,6 +65,7 @@ export class ControlWrapperComponent implements AfterContentInit {
     }
 
     if (this.ngModelGroup) {
+      console.log(this.ngModelGroup.name)
       return this.ngModelGroup
     }
 
@@ -76,6 +76,8 @@ export class ControlWrapperComponent implements AfterContentInit {
 
   #setError() {
     const errorMessage = this.#getControl().control.errors?.['schemaViolation']
+
+    console.log(this.#getControl().name, errorMessage)
 
     if (errorMessage) {
       this.validationError.set(errorMessage)

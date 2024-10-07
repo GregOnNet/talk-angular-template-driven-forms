@@ -29,7 +29,7 @@ export class NgModelErrorSubscriberDirective implements AfterViewInit {
             this.#ngControl.control
           ).split('.')
 
-          const isPartOfTheSchema = this.#isControlPartOftheSchema(
+          const isPartOfTheSchema = this.#isControlPartOfTheSchema(
             controlPathSegments,
             this.#formSchema.formSchema() as any
           )
@@ -61,23 +61,28 @@ export class NgModelErrorSubscriberDirective implements AfterViewInit {
     )
   }
 
-  #isControlPartOftheSchema(
+  #isControlPartOfTheSchema(
     controlPathSegments: string[],
     schema: LooseObjectSchema<any, any>
   ): boolean {
     const [key, ...rest] = controlPathSegments
 
-    const schemaPicklist = keyof(schema as any)
-    const keys: string[] = schemaPicklist.options
+    try {
+      const schemaPicklist = keyof(schema as any)
+      const keys: string[] = schemaPicklist.options
 
-    if (keys.includes(key) && rest.length === 0) {
+      if (keys.includes(key) && rest.length === 0) {
+        return true
+      }
+
+      if (keys.includes(key)) {
+        return this.#isControlPartOfTheSchema(rest, schema.entries[key])
+      }
+
+      return false
+    } catch {
+      // valibots keyof throws when the schema contains a record, since the data structure defers.
       return true
     }
-
-    if (keys.includes(key)) {
-      return this.#isControlPartOftheSchema(rest, schema.entries[key])
-    }
-
-    return false
   }
 }

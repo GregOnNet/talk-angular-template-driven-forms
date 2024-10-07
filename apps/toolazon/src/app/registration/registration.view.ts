@@ -72,22 +72,9 @@ import { NgForm } from '@angular/forms'
             id="email_verification"
           />
         </fieldset>
-
-        <fieldset
-          class="flex flex-col gap-2"
-          control-wrapper
-        >
-          <label for="email_verification2">E-Mail verification 2 (unwanted)</label>
-          <input
-            pInputText
-            [ngModel]="registrationModel().email?.verification"
-            name="verification_2"
-            id="email_verification2"
-          />
-        </fieldset>
       </div>
 
-      <div class="flex gap-2">
+      <div class="flex gap-2 justify-end">
         <p-button
           tabindex="1"
           (click)="form.reset()"
@@ -122,6 +109,6 @@ export default class RegistrationView {
       return
     }
 
-    await this.#router.navigate(['/', 'basket'])
+    await this.#router.navigate(['/', 'shopping', 'list'])
   }
 }

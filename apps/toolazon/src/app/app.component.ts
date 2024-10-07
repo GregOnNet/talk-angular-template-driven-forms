@@ -8,11 +8,13 @@ import { Aura } from 'primeng/themes/aura'
   imports: [RouterModule],
   selector: 'tz-root',
   template: `
-    <header>
-      <h1 class="text-yellow-400 font-bold text-center text-2xl p-5">Toolazon</h1>
+    <header class="bg-highlight">
+      <h1 class="text-primary font-bold text-center text-2xl p-5">Toolazon</h1>
     </header>
 
-    <router-outlet></router-outlet>
+    <main class="p-8">
+      <router-outlet></router-outlet>
+    </main>
   `
 })
 export class AppComponent {
