@@ -46,14 +46,14 @@ export class NgModelGroupErrorSubscriberDirective implements AfterViewInit, OnDe
   }
 
   #bindFormSettingErrors() {
-    return this.#formSetting.errors$.pipe(
+    return this.#formSetting.schemaViolations$.pipe(
       tap(errors => {
         const error = errors?.[this.name()] ?? null
 
         if (error) {
           this.#componentRef?.destroy() // Avoid component is rendered multiple times if error is already displayed
           this.#componentRef = this.#viewContainerRef.createComponent(ErrorSummaryComponent)
-          this.#componentRef.instance.text.set(error.auto)
+          this.#componentRef.instance.text.set(error.schemaViolation)
         } else {
           this.#componentRef?.destroy()
         }

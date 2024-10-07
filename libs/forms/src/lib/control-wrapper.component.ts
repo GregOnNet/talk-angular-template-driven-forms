@@ -10,6 +10,7 @@ import {
 import { ControlContainer, NgForm, NgModel, NgModelGroup } from '@angular/forms'
 import { tap } from 'rxjs'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { FormSchemaDirective } from './form-schema.directive'
 
 @Component({
   selector: '[control-wrapper]',
@@ -17,60 +18,60 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
   template: `
     <ng-content></ng-content>
     @if (validationErrorToShow(); as text) {
-    <p class="border-2 border-red-400 text-red-100 rounded p-2 font-medium">
+    <small class="border-2 border-red-400 text-red-100 rounded p-2 font-medium">
       {{ text }}
-    </p>
+    </small>
     }
   `,
   viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
 })
 export class ControlWrapperComponent implements AfterContentInit {
   #destroyRef = inject(DestroyRef)
+  #formSchema = inject(FormSchemaDirective)
 
   protected ngModel = contentChild(NgModel)
   protected ngModelGroup = inject(NgModelGroup, { optional: true, skipSelf: true })
 
-  protected isDirty = signal(false)
+  protected isTouched = signal(false)
 
   protected validationError = signal('')
 
-  protected validationErrorToShow = computed(() => (this.isDirty() ? this.validationError() : ''))
+  protected validationErrorToShow = computed(() =>
+    this.#formSchema.formIsSubmitted() || this.isTouched() ? this.validationError() : ''
+  )
 
   ngAfterContentInit(): void {
     const statusChanges$ = this.#getControl().statusChanges
 
-    // A ngModelGroup has no statusChanges stream and yields null
+    // A ngModelGroup has no statusChanges stream available and yields null
     // We break in case of a ngModelGroup
     if (!statusChanges$) {
       return
-      // throw new Error('[control-wrapper]: Expected valueChanges-Stream to be initialized')
     }
 
-    // Immer wenn sich Status zu Fehler ändert
-    // lesen wir den Fehler aus
-    // und zeigen ihn an.
     statusChanges$
       .pipe(
         tap(status => (status === 'INVALID' ? this.#setError() : this.#clearError())),
-        tap(() => this.isDirty.set(this.#getControl().dirty || false)),
+        tap(() => this.isTouched.set(this.#getControl().touched || false)),
+        takeUntilDestroyed(this.#destroyRef)
+      )
+      .subscribe()
+
+    const valueChanges$ = this.#getControl().valueChanges
+
+    // A ngModelGroup has no statusChanges stream available and yields null
+    // We break in case of a ngModelGroup
+    if (!valueChanges$) {
+      return
+    }
+
+    valueChanges$
+      .pipe(
+        tap(() => this.isTouched.set(this.#getControl().touched || false)),
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe()
   }
-
-  // protected get isErrorRequiredToBeDisplayed(): boolean {
-  //   return !!this.matFormField.ngModel?.errors
-  // }
-
-  // protected get error() {
-  //   const errors = this.matFormField.ngModel?.errors
-  //
-  //   if (hasOwnProperty(errors, 'auto')) {
-  //     return errors.auto
-  //   }
-  //
-  //   throw new Error('Expected "suiteError", but nothing was found.')
-  // }
 
   #getControl() {
     const ngModel = this.ngModel()

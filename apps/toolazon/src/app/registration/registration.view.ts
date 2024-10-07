@@ -1,22 +1,24 @@
-import { Component, inject, signal } from '@angular/core'
+import { Component, inject, signal, viewChild } from '@angular/core'
 import { ButtonModule } from 'primeng/button'
-import { RouterLink } from '@angular/router'
+import { Router, RouterLink } from '@angular/router'
 import { InputTextModule } from 'primeng/inputtext'
 import { PartialDeep } from 'type-fest'
 import { EmailAddressAvailabilityChecker } from './email-address-availability-client.service'
 import { provideFormSchema } from '@toolazon/forms'
 import { createRegistrationSchema, Registration } from './registration.schema'
+import { NgForm } from '@angular/forms'
 
 @Component({
   selector: 'tz-registration',
   standalone: true,
   template: `
     <form
-      class="grid p-4 gap-4"
+      #form="ngForm"
       [formSchema]="registrationSchema"
       (valueChanged)="registrationModel.set($event)"
       (safeSubmit)="register($event)"
       [ngFormOptions]="{ updateOn: 'blur' }"
+      class="grid p-4 gap-4"
     >
       <fieldset
         class="flex flex-col gap-2"
@@ -73,21 +75,31 @@ import { createRegistrationSchema, Registration } from './registration.schema'
       </div>
 
       <p-button
+        (click)="navigateNext()"
         type="submit"
         label="Register"
-        routerLink="/shopping/list"
       ></p-button>
     </form>
   `,
   imports: [ButtonModule, RouterLink, InputTextModule, provideFormSchema()]
 })
 export default class RegistrationView {
+  #router = inject(Router)
   #emailAddressChecker = inject(EmailAddressAvailabilityChecker)
 
+  protected form = viewChild.required(NgForm)
   protected registrationSchema = createRegistrationSchema(this.#emailAddressChecker)
   protected registrationModel = signal<PartialDeep<Registration>>({})
 
   register(registration: Registration) {
     console.log(registration)
+  }
+
+  async navigateNext() {
+    if (this.form().invalid) {
+      return
+    }
+
+    await this.#router.navigate(['/', 'basket'])
   }
 }

@@ -5,7 +5,8 @@ import {
   inject,
   input,
   InputSignal,
-  output
+  output,
+  signal
 } from '@angular/core'
 import {
   outputFromObservable,
@@ -38,18 +39,24 @@ export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unkno
     PartialDeep<InferOutput<InferInputSignalValue<typeof this.formSchema>>>
   >(this.ngForm.valueChanges!.pipe(debounceTime(0)))
 
-  errors$ = new BehaviorSubject<Record<string, { auto: string }> | null>(null)
+  schemaViolations$ = new BehaviorSubject<Record<string, { schemaViolation: string }> | null>(null)
+  formIsSubmitted = signal(false)
 
   ngAfterViewInit(): void {
     this.validateFormValuesOnValueChange()
     this.emitSafeSubmitWhenValidationSucceeds()
+
+    this.ngForm.onReset = () => {
+      this.ngForm.onReset()
+      this.formIsSubmitted.set(false)
+    }
   }
 
   private validateFormValuesOnValueChange() {
     outputToObservable(this.valueChanged)
       .pipe(
         switchMap(() => this.validate()),
-        tap(result => this.errors$.next(result)),
+        tap(result => this.schemaViolations$.next(result)),
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe()
@@ -60,12 +67,13 @@ export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unkno
       .pipe(
         switchMap(() => safeParseAsync(this.formSchema(), this.ngForm.value)),
         tap(result => (result.success ? this.safeSubmit.emit(result.output) : {})),
+        tap(() => this.formIsSubmitted.set(true)),
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe()
   }
 
-  private async validate(): Promise<Record<string, { auto: string }> | null> {
+  private async validate(): Promise<Record<string, { schemaViolation: string }> | null> {
     const result = await safeParseAsync(this.formSchema(), this.ngForm.value)
 
     if (result.success) {

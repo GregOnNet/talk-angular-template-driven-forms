@@ -19,7 +19,7 @@ export class NgModelErrorSubscriberDirective implements AfterViewInit {
   }
 
   #bindFormSettingErrors() {
-    return this.#formSchema.errors$.pipe(
+    return this.#formSchema.schemaViolations$.pipe(
       tap(errors => {
         const controlPath = getControlPath(
           this.#formSchema.ngForm.control,
