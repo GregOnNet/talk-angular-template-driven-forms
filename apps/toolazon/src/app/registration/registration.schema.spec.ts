@@ -63,7 +63,7 @@ describe('When the user does not provide a valid email address', () => {
 
       const registrationSchema = createRegistrationSchema(emailCheckerMock)
 
-      const formValue = { firstname: 'Alan', lastname: 'Turing', email: { value: noValue } }
+      const formValue = { firstname: 'Alan', lastname: 'Turing', email: { email: noValue } }
 
       const result = await safeParseAsync(registrationSchema, formValue)
 
@@ -92,7 +92,7 @@ describe('When the user does not provide the email address verification', () => 
         firstname: 'Alan',
         lastname: 'Turing',
         email: {
-          value: 'alan.turing@christopher.uk',
+          email: 'alan.turing@christopher.uk',
           verification: noValue
         }
       }
@@ -117,7 +117,7 @@ describe('When the user types a another verified email address', () => {
       firstname: 'Alan',
       lastname: 'Turing',
       email: {
-        value: 'alan.turing@christopher.uk',
+        email: 'alan.turing@christopher.uk',
         verification: 'albert.einstein@relativity.ch'
       }
     }
@@ -140,7 +140,7 @@ describe('When the email address has already been taken', () => {
       firstname: 'Alan',
       lastname: 'Turing',
       email: {
-        value: 'taken.email@address.com'
+        email: 'taken.email@address.com'
       }
     }
 
@@ -148,5 +148,30 @@ describe('When the email address has already been taken', () => {
 
     expect(result.success).toBeFalsy()
     expect(result.issues?.[0].message).toBe('The email address has already been taken.')
+  })
+})
+
+describe('When an unknown field is parsed', () => {
+  it('yields failure a failure message', async () => {
+    const emailCheckerMock: ICheckEmailAddressAvailability = {
+      check: jest.fn().mockResolvedValue(true)
+    }
+    const registrationSchema = createRegistrationSchema(emailCheckerMock)
+
+    const formValue = {
+      firstname: 'Alan',
+      lastname: 'Turing',
+      email: {
+        email: 'alan.turing@cristopher.uk',
+        verification: 'alan.turing@cristopher.uk',
+        I_DO_NOT_BELONG_HERE: true
+      }
+    }
+
+    const result = await safeParseAsync(registrationSchema, formValue)
+
+    expect(result.success).toBeFalsy()
+    console.log(result.issues)
+    expect(result.issues?.[0].message).toBe('FooBar')
   })
 })

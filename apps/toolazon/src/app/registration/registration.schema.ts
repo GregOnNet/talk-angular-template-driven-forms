@@ -8,6 +8,7 @@ import {
   partialCheckAsync,
   pipe,
   pipeAsync,
+  strictObjectAsync,
   string
 } from 'valibot'
 
@@ -64,7 +65,7 @@ function createEmailVerificationSchema(
   emailAddressAvailabilityChecker: ICheckEmailAddressAvailability
 ) {
   return pipeAsync(
-    objectAsync({
+    strictObjectAsync({
       email: pipeAsync(
         EmailValidationSchema,
         createEmailAddressAvailabilitySchema(emailAddressAvailabilityChecker)

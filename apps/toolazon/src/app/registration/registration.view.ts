@@ -72,6 +72,19 @@ import { NgForm } from '@angular/forms'
             id="email_verification"
           />
         </fieldset>
+
+        <fieldset
+          class="flex flex-col gap-2"
+          control-wrapper
+        >
+          <label for="email_verification">E-Mail verification</label>
+          <input
+            pInputText
+            [ngModel]="registrationModel().email?.verification"
+            name="verification_???"
+            id="email_verification"
+          />
+        </fieldset>
       </div>
 
       <div class="flex gap-2 justify-end">

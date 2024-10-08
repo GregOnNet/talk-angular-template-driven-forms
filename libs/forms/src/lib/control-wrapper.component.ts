@@ -65,7 +65,6 @@ export class ControlWrapperComponent implements AfterContentInit {
     }
 
     if (this.ngModelGroup) {
-      console.log(this.ngModelGroup.name)
       return this.ngModelGroup
     }
 
@@ -76,8 +75,6 @@ export class ControlWrapperComponent implements AfterContentInit {
 
   #setError() {
     const errorMessage = this.#getControl().control.errors?.['schemaViolation']
-
-    console.log(this.#getControl().name, errorMessage)
 
     if (errorMessage) {
       this.validationError.set(errorMessage)

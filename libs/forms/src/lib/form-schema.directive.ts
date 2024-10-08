@@ -8,11 +8,7 @@ import {
   output,
   signal
 } from '@angular/core'
-import {
-  outputFromObservable,
-  outputToObservable,
-  takeUntilDestroyed
-} from '@angular/core/rxjs-interop'
+import { outputFromObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgForm } from '@angular/forms'
 import { BehaviorSubject, debounceTime, switchMap, tap } from 'rxjs'
 import { BaseIssue, BaseSchemaAsync, InferOutput, safeParseAsync } from 'valibot'
@@ -39,7 +35,7 @@ export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unkno
     PartialDeep<InferOutput<InferInputSignalValue<typeof this.formSchema>>>
   >(this.ngForm.valueChanges!.pipe(debounceTime(0)))
 
-  schemaViolations$ = new BehaviorSubject<Record<string, { schemaViolation: string }> | null>(null)
+  schemaIssues$ = new BehaviorSubject<Record<string, { schemaViolation: string }> | null>(null)
   formIsSubmitted = signal(false)
 
   ngAfterViewInit(): void {
@@ -48,10 +44,17 @@ export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unkno
   }
 
   private validateOnFormValueChanges() {
-    outputToObservable(this.valueChanged)
+    const valueChanges$ = this.ngForm.valueChanges
+
+    if (!valueChanges$) {
+      throw new Error("[formSchema] Expect NgForm's valueChanges to be present.")
+    }
+
+    valueChanges$
       .pipe(
-        switchMap(() => this.#validate()),
-        tap(result => this.schemaViolations$.next(result)),
+        switchMap(() => safeParseAsync(this.formSchema(), this.ngForm.value)),
+        tap(result => this.#reportUnknownIssues(result.issues)),
+        tap(result => this.#reportKnownIssues(result.issues)),
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe()
@@ -81,19 +84,61 @@ export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unkno
     this.formIsSubmitted.set(true)
   }
 
-  async #validate(): Promise<Record<string, { schemaViolation: string }> | null> {
-    const result = await safeParseAsync(this.formSchema(), this.ngForm.value)
+  // async #validate(): Promise<Record<string, { schemaViolation: string }> | null> {
+  //   const result = await safeParseAsync(this.formSchema(), this.ngForm.value)
+  //
+  //   if (result.success) {
+  //     return null
+  //   }
+  //
+  //   const unknownIssues = result.issues.filter(this.#isUnknownIssue)
+  //   this.#reportUnknownIssues(unknownIssues)
+  //
+  //   const knownIssues = result.issues.filter(this.#isKnownIssue)
+  //
+  //   return knownIssues.reduce((record, issue) => {
+  //     const path = issue.path?.map((segment: any) => segment.key).join('.')
+  //
+  //     if (!path) return record
+  //
+  //     return Object.assign(record, { [path]: { schemaViolation: issue.message } })
+  //   }, {})
+  // }
 
-    if (result.success) {
-      return null
+  #reportUnknownIssues(issues: BaseIssue<any>[] = []) {
+    const unknownIssues = issues.filter(issue => this.#isUnknownIssue(issue))
+
+    for (const unknownIssue of unknownIssues) {
+      console.error(
+        `[formSchema]: Unknown NgControl detected: "${(unknownIssue.path || [])
+          .map(segment => segment.key)
+          .join(' ~> ')}"`
+      )
     }
+  }
 
-    return result.issues.reduce((record, error) => {
-      const path = error.path?.map((segment: any) => segment.key).join('.')
+  #reportKnownIssues(issues: BaseIssue<any>[] = []) {
+    const issueMap = issues
+      .filter(issue => this.#isKnownIssue(issue))
+      .reduce((record, issue) => {
+        const path = issue.path?.map((segment: any) => segment.key).join('.')
 
-      if (!path) return record
+        if (!path) return record
 
-      return Object.assign(record, { [path]: { schemaViolation: error.message } })
-    }, {})
+        return Object.assign(record, { [path]: { schemaViolation: issue.message } })
+      }, {})
+
+    this.schemaIssues$.next(issueMap)
+  }
+
+  #isKnownIssue(issue: BaseIssue<any>) {
+    return !this.#isUnknownIssue(issue)
+  }
+
+  #isUnknownIssue(issue: BaseIssue<any>): boolean {
+    return (
+      issue.type === 'strict_object' &&
+      issue.message.includes('Invalid type: Expected never but received')
+    )
   }
 }

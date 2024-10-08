@@ -19,34 +19,10 @@ export class NgModelErrorSubscriberDirective implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.#bindFormSettingErrors().pipe(takeUntilDestroyed(this.#destroyRef)).subscribe()
-
-    this.#ngControl
-      .valueChanges!.pipe(
-        tap(() => {
-          const controlPathSegments = getControlPath(
-            this.#formSchema.ngForm.control,
-            this.#ngControl.name?.toString() || '',
-            this.#ngControl.control
-          ).split('.')
-
-          const isPartOfTheSchema = this.#isControlPartOfTheSchema(
-            controlPathSegments,
-            this.#formSchema.formSchema() as any
-          )
-
-          if (!isPartOfTheSchema) {
-            throw new Error(
-              `NgControl "${controlPathSegments.join(' ~> ')}" does not match the given schema.`
-            )
-          }
-        }),
-        takeUntilDestroyed(this.#destroyRef)
-      )
-      .subscribe()
   }
 
   #bindFormSettingErrors() {
-    return this.#formSchema.schemaViolations$.pipe(
+    return this.#formSchema.schemaIssues$.pipe(
       tap(errors => {
         const controlPath = getControlPath(
           this.#formSchema.ngForm.control,

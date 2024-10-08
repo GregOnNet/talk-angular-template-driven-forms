@@ -55,7 +55,7 @@ export class NgModelGroupErrorSubscriberDirective implements AfterViewInit, OnDe
   }
 
   #bindFormSettingErrors() {
-    return this.#formSchema.schemaViolations$.pipe(
+    return this.#formSchema.schemaIssues$.pipe(
       tap(errors => {
         const error = errors?.[this.name()] ?? null
 
