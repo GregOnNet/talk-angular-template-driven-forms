@@ -1,4 +1,4 @@
-import { Component, inject, signal, viewChild } from '@angular/core'
+import { Component, computed, inject, signal, viewChild } from '@angular/core'
 import { ButtonModule } from 'primeng/button'
 import { Router, RouterLink } from '@angular/router'
 import { ButtonGroupModule } from 'primeng/buttongroup'
@@ -27,8 +27,14 @@ import { NgForm } from '@angular/forms'
               [ngModel]="shoppingListModel().products?.[product.id]"
               [name]="product.id"
               [product]="product"
-            ></tz-product-card>
+            />
           </fieldset>
+          } @if(vm().vipProduct; as vipProduct) {
+          <tz-product-card
+            [ngModel]="vm().model.products?.[vipProduct.id]"
+            [name]="vipProduct.id"
+            [product]="vipProduct"
+          />
           }
         </div>
         <p-button
@@ -62,6 +68,25 @@ export default class ShoppingListView {
     { id: crypto.randomUUID(), name: 'Hammer', thumbnail: '🔨' },
     { id: crypto.randomUUID(), name: 'Axe', thumbnail: '🪓' }
   ])
+
+  protected vipProduct = signal<Product>({
+    id: crypto.randomUUID(),
+    name: 'Paper clip',
+    thumbnail: '🔗'
+  })
+
+  protected vm = computed(() => {
+    const products = Object.values(this.shoppingListModel().products || {}).filter(
+      (maybeAmount): maybeAmount is number => !!maybeAmount
+    )
+
+    const total = products.reduce((total, amount) => total + amount, 0)
+
+    return {
+      model: this.shoppingListModel(),
+      vipProduct: total >= 10 ? this.vipProduct() : null
+    }
+  })
 
   async tryNavigateNext() {
     if (this.form().invalid) {
