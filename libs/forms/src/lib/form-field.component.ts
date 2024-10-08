@@ -13,7 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormSchemaDirective } from './form-schema.directive'
 
 @Component({
-  selector: '[control-wrapper]',
+  selector: '[form-field]',
   standalone: true,
   template: `
     <ng-content></ng-content>
@@ -24,7 +24,7 @@ import { FormSchemaDirective } from './form-schema.directive'
     }
   `
 })
-export class ControlWrapperComponent implements AfterContentInit {
+export class FormFieldComponent implements AfterContentInit {
   #destroyRef = inject(DestroyRef)
   #formSchema = inject(FormSchemaDirective)
 

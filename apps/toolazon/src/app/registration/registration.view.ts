@@ -22,7 +22,7 @@ import { NgForm } from '@angular/forms'
     >
       <fieldset
         class="flex flex-col gap-2"
-        control-wrapper
+        form-field
       >
         <label for="firstname">Firstname</label>
         <input
@@ -35,7 +35,7 @@ import { NgForm } from '@angular/forms'
 
       <fieldset
         class="flex flex-col gap-2"
-        control-wrapper
+        form-field
       >
         <label for="lastname">Lastname</label>
         <input
@@ -49,7 +49,7 @@ import { NgForm } from '@angular/forms'
       <div ngModelGroup="email">
         <fieldset
           class="flex flex-col gap-2"
-          control-wrapper
+          form-field
         >
           <label for="email">E-Mail</label>
           <input
@@ -62,26 +62,13 @@ import { NgForm } from '@angular/forms'
 
         <fieldset
           class="flex flex-col gap-2"
-          control-wrapper
+          form-field
         >
           <label for="email_verification">E-Mail verification</label>
           <input
             pInputText
             [ngModel]="registrationModel().email?.verification"
             name="verification"
-            id="email_verification"
-          />
-        </fieldset>
-
-        <fieldset
-          class="flex flex-col gap-2"
-          control-wrapper
-        >
-          <label for="email_verification">E-Mail verification</label>
-          <input
-            pInputText
-            [ngModel]="registrationModel().email?.verification"
-            name="verification_???"
             id="email_verification"
           />
         </fieldset>

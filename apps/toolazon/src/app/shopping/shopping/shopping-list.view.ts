@@ -23,7 +23,7 @@ import { NgForm } from '@angular/forms'
         <div ngModelGroup="products">
           @for (product of products(); track product.id) {
 
-          <fieldset control-wrapper>
+          <fieldset form-field>
             <tz-product-card
               [ngModel]="shoppingListModel().products?.[product.id]"
               [name]="product.id"
