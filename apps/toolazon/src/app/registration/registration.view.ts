@@ -46,7 +46,10 @@ import { NgForm } from '@angular/forms'
         />
       </fieldset>
 
-      <div ngModelGroup="email">
+      <div
+        ngModelGroup="email"
+        class="flex flex-col gap-4"
+      >
         <fieldset
           class="flex flex-col gap-2"
           form-field

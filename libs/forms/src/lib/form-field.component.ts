@@ -18,7 +18,7 @@ import { FormSchemaDirective } from './form-schema.directive'
   template: `
     <ng-content></ng-content>
     @if (validationErrorToShow(); as text) {
-    <span class="text-red-500 rounded mb-4 ">
+    <span class="text-red-500 rounded mb-4 animate-fadein">
       {{ text }}
     </span>
     }
