@@ -7,6 +7,7 @@ import { EmailAddressAvailabilityChecker } from './email-address-availability-cl
 import { provideFormSchema } from '@toolazon/forms'
 import { createRegistrationSchema, Registration } from './contracts'
 import { NgForm } from '@angular/forms'
+import { RegistrationEmailFieldsComponent } from './registration-email-fields.component'
 
 @Component({
   selector: 'tz-registration',
@@ -75,25 +76,26 @@ import { NgForm } from '@angular/forms'
             id="email_verification"
           />
         </fieldset>
+        <!--        <tz-registration-email-fields [model]="registrationModel().email" />-->
       </div>
 
       <div class="flex gap-2 justify-end">
         <p-button
-          tabindex="1"
-          (click)="form.reset()"
-          severity="secondary"
-          label="Reset"
-        ></p-button>
-
-        <p-button
           (click)="navigateNext()"
+          size="large"
           type="submit"
           label="Register"
         ></p-button>
       </div>
     </form>
   `,
-  imports: [ButtonModule, RouterLink, InputTextModule, provideFormSchema()]
+  imports: [
+    ButtonModule,
+    RouterLink,
+    InputTextModule,
+    provideFormSchema(),
+    RegistrationEmailFieldsComponent
+  ]
 })
 export default class RegistrationView {
   #router = inject(Router)
