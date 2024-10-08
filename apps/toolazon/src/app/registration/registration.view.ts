@@ -5,7 +5,7 @@ import { InputTextModule } from 'primeng/inputtext'
 import { PartialDeep } from 'type-fest'
 import { EmailAddressAvailabilityChecker } from './email-address-availability-client.service'
 import { provideFormSchema } from '@toolazon/forms'
-import { createRegistrationSchema, Registration } from './registration.schema'
+import { createRegistrationSchema, Registration } from './contracts'
 import { NgForm } from '@angular/forms'
 
 @Component({

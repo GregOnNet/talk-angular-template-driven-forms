@@ -1,6 +1,6 @@
 import { safeParseAsync } from 'valibot'
 import { expect } from '@playwright/test'
-import { ICheckEmailAddressAvailability } from './contracts'
+import { ICheckEmailAddressAvailability } from './index'
 import { createRegistrationSchema } from './registration.schema'
 
 describe('When the user does not provide a firstname', () => {
@@ -171,7 +171,5 @@ describe('When an unknown field is parsed', () => {
     const result = await safeParseAsync(registrationSchema, formValue)
 
     expect(result.success).toBeFalsy()
-    console.log(result.issues)
-    expect(result.issues?.[0].message).toBe('FooBar')
   })
 })

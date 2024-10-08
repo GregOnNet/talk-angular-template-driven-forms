@@ -12,7 +12,7 @@ import {
   string
 } from 'valibot'
 
-import { ICheckEmailAddressAvailability } from './contracts'
+import { ICheckEmailAddressAvailability } from './index'
 
 /*
  *
