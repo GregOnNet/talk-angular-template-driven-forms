@@ -74,7 +74,7 @@ export class FormFieldComponent implements AfterContentInit {
   }
 
   #setError() {
-    const errorMessage = this.#getControl().control.errors?.['schemaViolation']
+    const errorMessage = this.#getControl().control.errors?.['error']
 
     if (errorMessage) {
       this.validationError.set(errorMessage)

@@ -12,9 +12,9 @@ import {
   ViewContainerRef
 } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { NgModelGroup } from '@angular/forms'
 import { tap } from 'rxjs'
 import { FormSchemaDirective } from './form-schema.directive'
-import { NgModelGroup } from '@angular/forms'
 
 @Component({
   standalone: true,
@@ -55,7 +55,7 @@ export class NgModelGroupErrorSubscriberDirective implements AfterViewInit, OnDe
   }
 
   #bindFormSettingErrors() {
-    return this.#formSchema.schemaIssues$.pipe(
+    return this.#formSchema.errors$.pipe(
       tap(errors => {
         const error = errors?.[this.name()] ?? null
 
@@ -64,7 +64,7 @@ export class NgModelGroupErrorSubscriberDirective implements AfterViewInit, OnDe
           this.#componentRef?.destroy() // Avoid component is rendered multiple times if error is already displayed
           this.#componentRef = this.#viewContainerRef.createComponent(ErrorSummaryComponent)
           this.#componentRef.instance.isVisible = this.#formSchema.formIsSubmitted
-          this.#componentRef.instance.text.set(error.schemaViolation)
+          this.#componentRef.instance.text.set(error.error)
         } else {
           this.#componentRef?.destroy()
         }

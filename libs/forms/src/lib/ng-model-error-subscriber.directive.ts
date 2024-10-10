@@ -21,7 +21,7 @@ export class NgModelErrorSubscriberDirective {
   }
 
   #listenForControlErrors() {
-    return this.#formSchema.schemaIssues$
+    return this.#formSchema.errors$
       .pipe(
         map(errors => ({ errors, controlPath: this.#buildControlPath() })),
         map(({ errors, controlPath }) => errors?.[controlPath] ?? null),

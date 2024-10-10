@@ -11,8 +11,8 @@ import {
 import { outputFromObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgForm } from '@angular/forms'
 import { BehaviorSubject, debounceTime, switchMap, tap } from 'rxjs'
-import { BaseIssue, BaseSchemaAsync, InferOutput, safeParseAsync } from 'valibot'
 import { PartialDeep } from 'type-fest'
+import { BaseIssue, BaseSchemaAsync, InferOutput, safeParseAsync } from 'valibot'
 
 type InferInputSignalValue<TSignal> = TSignal extends InputSignal<infer TValue> ? TValue : never
 
@@ -35,7 +35,7 @@ export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unkno
     PartialDeep<InferOutput<InferInputSignalValue<typeof this.formSchema>>>
   >(this.ngForm.valueChanges!.pipe(debounceTime(0)))
 
-  schemaIssues$ = new BehaviorSubject<Record<string, { schemaViolation: string }> | null>(null)
+  errors$ = new BehaviorSubject<Record<string, { error: string }> | null>(null)
   formIsSubmitted = signal(false)
 
   ngAfterViewInit(): void {
@@ -84,7 +84,7 @@ export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unkno
     this.formIsSubmitted.set(true)
   }
 
-  // async #validate(): Promise<Record<string, { schemaViolation: string }> | null> {
+  // async #validate(): Promise<Record<string, { error: string }> | null> {
   //   const result = await safeParseAsync(this.formSchema(), this.ngForm.value)
   //
   //   if (result.success) {
@@ -101,7 +101,7 @@ export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unkno
   //
   //     if (!path) return record
   //
-  //     return Object.assign(record, { [path]: { schemaViolation: issue.message } })
+  //     return Object.assign(record, { [path]: { error: issue.message } })
   //   }, {})
   // }
 
@@ -125,10 +125,10 @@ export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unkno
 
         if (!path) return record
 
-        return Object.assign(record, { [path]: { schemaViolation: issue.message } })
+        return Object.assign(record, { [path]: { error: issue.message } })
       }, {})
 
-    this.schemaIssues$.next(issueMap)
+    this.errors$.next(issueMap)
   }
 
   #isKnownIssue(issue: BaseIssue<any>) {
