@@ -1,5 +1,7 @@
 # Pride and Prejudice - Template Driven Forms
 
+> **[Slides are available at SpeakerDeck](https://speakerdeck.com/gregonnet/pride-and-prejudice-template-driven-forms?)**
+
 ## Intro
 
 Hey there 👋,
