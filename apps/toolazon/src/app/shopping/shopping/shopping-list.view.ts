@@ -1,13 +1,13 @@
-import { Component, computed, inject, signal, viewChild } from '@angular/core'
-import { ButtonModule } from 'primeng/button'
-import { Router, RouterLink } from '@angular/router'
-import { ButtonGroupModule } from 'primeng/buttongroup'
-import { ProductCardComponent } from './product-card.component'
-import { Product, ShoppingList, ShoppingListSchema } from './contracts'
-import { provideFormSchema } from '@toolazon/forms'
-import { PartialDeep } from 'type-fest'
 import { JsonPipe } from '@angular/common'
+import { Component, computed, inject, signal, viewChild } from '@angular/core'
 import { NgForm } from '@angular/forms'
+import { Router, RouterLink } from '@angular/router'
+import { provideFormSchema } from '@toolazon/forms'
+import { ButtonModule } from 'primeng/button'
+import { ButtonGroupModule } from 'primeng/buttongroup'
+import { PartialDeep } from 'type-fest'
+import { Product, ShoppingList, ShoppingListSchema } from './contracts'
+import { ProductCardComponent } from './product-card.component'
 
 @Component({
   selector: 'tz-shopping-list',
@@ -19,10 +19,13 @@ import { NgForm } from '@angular/forms'
         [formSchema]="shoppingListSchema"
         (valueChanged)="shoppingListModel.set($event)"
       >
-        <div ngModelGroup="products">
+        <div
+          ngModelGroup="products"
+          class="grid gap-4"
+        >
           @for (product of products(); track product.id) {
 
-          <fieldset form-field>
+          <fieldset form-field-outlet>
             <tz-product-card
               [ngModel]="shoppingListModel().products?.[product.id]"
               [name]="product.id"
@@ -38,7 +41,8 @@ import { NgForm } from '@angular/forms'
           }
         </div>
         <p-button
-          label="View basket"
+          label="Send to my current location"
+          size="large"
           type="submit"
           (click)="tryNavigateNext()"
         ></p-button>
@@ -93,6 +97,6 @@ export default class ShoppingListView {
       return
     }
 
-    await this.#router.navigate(['/', 'shopping', 'basket'])
+    await this.#router.navigate(['/', 'checkout', 'confirmation'])
   }
 }

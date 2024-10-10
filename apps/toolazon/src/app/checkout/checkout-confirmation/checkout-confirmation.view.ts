@@ -1,16 +1,23 @@
 import { afterNextRender, Component } from '@angular/core'
-import { ButtonModule } from 'primeng/button'
 import { RouterLink } from '@angular/router'
 import confetti from 'canvas-confetti'
+import { ButtonModule } from 'primeng/button'
 
 @Component({
   selector: 'tz-checkout-confirmation',
   standalone: true,
   template: `
-    <p-button
-      label="Back to overview"
-      routerLink="/shopping/list"
-    ></p-button>
+    <div class="grid gap-8 items-center place-content-center">
+      <header class="leading-10">
+        <h2 class="text-5xl">Thank you!</h2>
+        <p>The next tool shop prepares your delivery, already.</p>
+      </header>
+      <p-button
+        label="Shop more"
+        size="large"
+        routerLink="/shopping/list"
+      ></p-button>
+    </div>
   `,
   imports: [ButtonModule, RouterLink]
 })

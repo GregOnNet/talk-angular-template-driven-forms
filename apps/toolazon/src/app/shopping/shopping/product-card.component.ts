@@ -1,7 +1,7 @@
 import { Component, forwardRef, input, signal } from '@angular/core'
-import { ButtonGroupModule } from 'primeng/buttongroup'
-import { ButtonModule } from 'primeng/button'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
+import { ButtonModule } from 'primeng/button'
+import { ButtonGroupModule } from 'primeng/buttongroup'
 import { Product } from './contracts'
 
 @Component({
@@ -10,7 +10,7 @@ import { Product } from './contracts'
   imports: [ButtonGroupModule, ButtonModule],
   template: `
     <div class="flex gap-4 items-center">
-      <article class="grid gap-2">
+      <article class="grid gap-2 min-w-16">
         <p class="text-center text-4xl">{{ product().thumbnail }}</p>
         <small class="block text-center">{{ product().name }}</small>
       </article>

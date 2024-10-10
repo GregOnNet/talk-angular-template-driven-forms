@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core'
-import { InputTextModule } from 'primeng/inputtext'
 import { ngFormBridge, provideFormSchema } from '@toolazon/forms'
+import { InputTextModule } from 'primeng/inputtext'
 import { PartialDeep } from 'type-fest'
 import { Registration } from './contracts'
 
@@ -10,7 +10,7 @@ import { Registration } from './contracts'
   template: `
     <fieldset
       class="flex flex-col gap-2"
-      form-field
+      form-field-outlet
     >
       <label for="email">E-Mail</label>
       <input
@@ -23,7 +23,7 @@ import { Registration } from './contracts'
 
     <fieldset
       class="flex flex-col gap-2"
-      form-field
+      form-field-outlet
     >
       <label for="email_verification">E-Mail verification</label>
       <input

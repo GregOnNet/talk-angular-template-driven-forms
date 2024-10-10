@@ -1,12 +1,12 @@
 import { Component, inject, signal, viewChild } from '@angular/core'
-import { ButtonModule } from 'primeng/button'
+import { NgForm } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
+import { provideFormSchema } from '@toolazon/forms'
+import { ButtonModule } from 'primeng/button'
 import { InputTextModule } from 'primeng/inputtext'
 import { PartialDeep } from 'type-fest'
-import { EmailAddressAvailabilityChecker } from './email-address-availability-client.service'
-import { provideFormSchema } from '@toolazon/forms'
 import { createRegistrationSchema, Registration } from './contracts'
-import { NgForm } from '@angular/forms'
+import { EmailAddressAvailabilityChecker } from './email-address-availability-client.service'
 import { RegistrationEmailFieldsComponent } from './registration-email-fields.component'
 
 @Component({
@@ -14,7 +14,6 @@ import { RegistrationEmailFieldsComponent } from './registration-email-fields.co
   standalone: true,
   template: `
     <form
-      #form="ngForm"
       [formSchema]="registrationSchema"
       (valueChanged)="registrationModel.set($event)"
       (safeSubmit)="register($event)"
@@ -23,7 +22,7 @@ import { RegistrationEmailFieldsComponent } from './registration-email-fields.co
     >
       <fieldset
         class="flex flex-col gap-2"
-        form-field
+        form-field-outlet
       >
         <label for="firstname">Firstname</label>
         <input
@@ -36,7 +35,7 @@ import { RegistrationEmailFieldsComponent } from './registration-email-fields.co
 
       <fieldset
         class="flex flex-col gap-2"
-        form-field
+        form-field-outlet
       >
         <label for="lastname">Lastname</label>
         <input
@@ -53,7 +52,7 @@ import { RegistrationEmailFieldsComponent } from './registration-email-fields.co
       >
         <fieldset
           class="flex flex-col gap-2"
-          form-field
+          form-field-outlet
         >
           <label for="email">E-Mail</label>
           <input
@@ -66,7 +65,7 @@ import { RegistrationEmailFieldsComponent } from './registration-email-fields.co
 
         <fieldset
           class="flex flex-col gap-2"
-          form-field
+          form-field-outlet
         >
           <label for="email_verification">E-Mail verification</label>
           <input
