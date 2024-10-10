@@ -17,7 +17,7 @@ import { ProductCardComponent } from './product-card.component'
       <form
         class="grid gap-4"
         [formSchema]="shoppingListSchema"
-        (valueChanged)="shoppingListModel.set($event)"
+        (formUpdated)="shoppingListModel.set($event)"
       >
         <div
           ngModelGroup="products"

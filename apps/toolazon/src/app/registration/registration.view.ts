@@ -15,7 +15,7 @@ import { RegistrationEmailFieldsComponent } from './registration-email-fields.co
   template: `
     <form
       [formSchema]="registrationSchema"
-      (valueChanged)="registrationModel.set($event)"
+      (formUpdated)="registrationModel.set($event)"
       (safeSubmit)="register($event)"
       [ngFormOptions]="{ updateOn: 'blur' }"
       class="grid p-4 gap-4"

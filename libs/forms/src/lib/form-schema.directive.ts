@@ -31,7 +31,7 @@ export class FormSchemaDirective<TInput, TOutput, TIssue extends BaseIssue<unkno
 
   safeSubmit = output<InferOutput<InferInputSignalValue<typeof this.formSchema>>>()
 
-  valueChanged = outputFromObservable<
+  formUpdated = outputFromObservable<
     PartialDeep<InferOutput<InferInputSignalValue<typeof this.formSchema>>>
   >(this.ngForm.valueChanges!.pipe(debounceTime(0)))
 
