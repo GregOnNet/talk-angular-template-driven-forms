@@ -24,7 +24,7 @@ I am curious, what do you use in your project? 😉
 
 ## Why do we "dislike" template-driven forms?
 
-When we go back in history, when Angular 2 was released. We only had template-driven forms.
+When we go back in history, before Angular was released in 2016. We only had template-driven forms in AngularJS.
 
 ... And they were fun. We had to-way data-binding to keep form values and our model in sync.
 We got built-in validations that worked across multiple browsers. ... Well, except Internet Explorer, if I remember correctly. 🤗
@@ -61,7 +61,7 @@ We dislike template-driven forms...
 
 ## Why do we like reactive forms?
 
-With Angular 4 reactive forms were introduced.
+With Angular 2 reactive forms were introduced.
 
 We were able to arrange controls and validators in de component class.
 What was left were the binding the controls to the template.
