@@ -137,8 +137,8 @@ The shopping app to let you buy your frequently necessary tools and utilities to
 
 ## History
 
-- Angular 2 was released in 2016 with template-driven forms
-- Angular 4 introduced reactive forms
+- AngularJS was released in 2010 with template-driven forms
+- Angular introduced reactive forms
 - reactive forms advertised integration with RxJS
 - reactive forms brought `FormBuilder`
 - we started arguing
