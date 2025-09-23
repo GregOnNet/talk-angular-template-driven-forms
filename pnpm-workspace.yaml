@@ -1,0 +1,7 @@
+onlyBuiltDependencies:
+  - '@swc/core'
+  - esbuild
+  - lmdb
+  - msgpackr-extract
+  - nice-napi
+  - nx
