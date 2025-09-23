@@ -1,6 +1,8 @@
 import { JsonPipe } from '@angular/common'
-import { Component, signal } from '@angular/core'
-import { Control, form } from '@angular/forms/signals'
+import { Component, inject, signal } from '@angular/core'
+import { rxResource } from '@angular/core/rxjs-interop'
+import { Control, form, required, validate, validateAsync } from '@angular/forms/signals'
+import { EmailAddressAvailabilityChecker } from './email-address-availability-client.service'
 
 @Component({
   selector: 'tz-registration-view',
@@ -16,6 +18,12 @@ import { Control, form } from '@angular/forms/signals'
             class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             [control]="registrationForm.firstName"
           />
+          @if (registrationForm.firstName().dirty()) { @for (error of
+          registrationForm.firstName().errors(); track error.kind) {
+          <span class="text-red-500 rounded mb-4">
+            {{ error.message }}
+          </span>
+          } }
         </fieldset>
         <fieldset>
           <label class="block text-sm font-medium mb-1">Last Name</label>
@@ -32,6 +40,11 @@ import { Control, form } from '@angular/forms/signals'
             class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             [control]="registrationForm.email"
           />
+          @for (error of registrationForm.email().errors(); track error.kind) {
+          <span class="text-red-500 rounded mb-4">
+            {{ error.message }}
+          </span>
+          }
         </fieldset>
         <fieldset>
           <label class="block text-sm font-medium mb-1">Confirmed Email</label>
@@ -39,6 +52,18 @@ import { Control, form } from '@angular/forms/signals'
             type="email"
             class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             [control]="registrationForm.confirmedEmail"
+          />
+          @for (error of registrationForm.confirmedEmail().errors(); track error.kind) {
+          <span class="text-red-500 rounded mb-4">
+            {{ error.message }}
+          </span>
+          }
+        </fieldset>
+        <fieldset>
+          <label class="block text-sm font-medium mb-1">Notify by Email</label>
+          <input
+            type="checkbox"
+            [control]="registrationForm.notifyByEmail"
           />
         </fieldset>
         <button
@@ -61,8 +86,56 @@ export class RegistrationViewComponent {
     firstName: '',
     lastName: '',
     email: '',
-    confirmedEmail: ''
+    confirmedEmail: '',
+    notifyByEmail: false
   })
 
-  protected registrationForm = form(this.registrationModel)
+  protected registrationForm = form(this.registrationModel, path => {
+    const emailAvailabilityChecker = inject(EmailAddressAvailabilityChecker)
+    required(path.firstName, { message: 'First name is required' })
+    required(path.lastName, { message: 'Last name is required' })
+
+    required(path.email, {
+      message: 'Email is required',
+      when: ({ valueOf }) => valueOf(path.notifyByEmail) === true
+    })
+
+    required(path.confirmedEmail, {
+      message: 'Confirmed email is required',
+      when: ({ valueOf }) => valueOf(path.notifyByEmail) === true
+    })
+
+    validate(path.confirmedEmail, ctx => {
+      if (ctx.value() !== ctx.valueOf(path.email)) {
+        return {
+          kind: 'confirmedEmail',
+          message: 'Email and confirmed email do not match'
+        } as any
+      }
+
+      return null
+    })
+
+    validateAsync(path.email, {
+      params: ctx => ctx.value(),
+      factory: params =>
+        rxResource({
+          params,
+          stream: ({ params }) => emailAvailabilityChecker.check(params)
+        }),
+      errors: (isAvailable, ctx) => {
+        return isAvailable
+          ? null
+          : {
+              kind: 'email',
+              message: `Email "${ctx.value()}" is not available`
+            }
+      }
+    })
+  })
+
+  constructor() {
+    // Interact with writable signal via form that syncs to model value
+    this.registrationForm.firstName().value.set('Alan')
+  }
 }
