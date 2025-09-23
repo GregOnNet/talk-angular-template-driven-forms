@@ -1,8 +1,40 @@
 import { JsonPipe } from '@angular/common'
 import { Component, inject, signal } from '@angular/core'
 import { rxResource } from '@angular/core/rxjs-interop'
-import { Control, form, required, validate, validateAsync } from '@angular/forms/signals'
+import {
+  apply,
+  Control,
+  email,
+  FieldState,
+  form,
+  required,
+  schema,
+  validate,
+  validateAsync
+} from '@angular/forms/signals'
 import { EmailAddressAvailabilityChecker } from './email-address-availability-client.service'
+
+const emailSchema = (emailAvailabilityChecker: EmailAddressAvailabilityChecker) =>
+  schema<string>(path => {
+    email(path, { message: 'Please enter a valid email address (e.g me@example.com)' })
+
+    validateAsync(path, {
+      params: ctx => ctx.value(),
+      factory: params =>
+        rxResource({
+          params,
+          stream: ({ params }) => emailAvailabilityChecker.check(params)
+        }),
+      errors: (isAvailable, ctx) => {
+        return isAvailable
+          ? null
+          : {
+              kind: 'email',
+              message: `Email "${ctx.value()}" is not available`
+            }
+      }
+    })
+  })
 
 @Component({
   selector: 'tz-registration-view',
@@ -77,11 +109,19 @@ import { EmailAddressAvailabilityChecker } from './email-address-availability-cl
       <pre class="mt-6 p-3 bg-gray-100 rounded text-xs overflow-auto">{{
         registrationForm().value() | json
       }}</pre>
+
+      <pre><code>
+        Form Valid: {{ registrationForm().valid() ? '✅' : '❌' }}
+        Form Touched: {{ registrationForm().touched() ? '✅' : '❌' }}
+      </code></pre>
     </div>
   `,
   imports: [Control, JsonPipe]
 })
 export class RegistrationViewComponent {
+  isRequired(field: FieldState<string, string>) {
+    return field.errors().some(error => error.kind === 'required')
+  }
   protected registrationModel = signal({
     firstName: '',
     lastName: '',
@@ -94,6 +134,8 @@ export class RegistrationViewComponent {
     const emailAvailabilityChecker = inject(EmailAddressAvailabilityChecker)
     required(path.firstName, { message: 'First name is required' })
     required(path.lastName, { message: 'Last name is required' })
+
+    apply(path.email, emailSchema(emailAvailabilityChecker))
 
     required(path.email, {
       message: 'Email is required',
@@ -114,23 +156,6 @@ export class RegistrationViewComponent {
       }
 
       return null
-    })
-
-    validateAsync(path.email, {
-      params: ctx => ctx.value(),
-      factory: params =>
-        rxResource({
-          params,
-          stream: ({ params }) => emailAvailabilityChecker.check(params)
-        }),
-      errors: (isAvailable, ctx) => {
-        return isAvailable
-          ? null
-          : {
-              kind: 'email',
-              message: `Email "${ctx.value()}" is not available`
-            }
-      }
     })
   })
 
