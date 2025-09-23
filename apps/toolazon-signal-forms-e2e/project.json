@@ -1,0 +1,9 @@
+{
+  "name": "toolazon-signal-forms-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/toolazon-signal-forms-e2e/src",
+  "implicitDependencies": ["toolazon-signal-forms"],
+  "// targets": "to see all targets run: nx show project toolazon-signal-forms-e2e --web",
+  "targets": {}
+}
