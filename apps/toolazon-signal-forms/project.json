@@ -12,7 +12,6 @@
       "options": {
         "outputPath": "dist/apps/toolazon-signal-forms",
         "browser": "apps/toolazon-signal-forms/src/main.ts",
-        "polyfills": ["zone.js"],
         "tsConfig": "apps/toolazon-signal-forms/tsconfig.app.json",
         "assets": [
           {
