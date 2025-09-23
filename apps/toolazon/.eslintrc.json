@@ -27,7 +27,8 @@
           {
             "suffixes": ["View", "Component"]
           }
-        ]
+        ],
+        "@angular-eslint/prefer-standalone": "off"
       }
     },
     {
