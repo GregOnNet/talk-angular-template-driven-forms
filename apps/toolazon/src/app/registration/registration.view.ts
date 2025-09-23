@@ -1,13 +1,13 @@
 import { Component, inject, signal, viewChild } from '@angular/core'
 import { NgForm } from '@angular/forms'
-import { Router, RouterLink } from '@angular/router'
+import { Router } from '@angular/router'
 import { provideFormSchema } from '@toolazon/forms'
 import { ButtonModule } from 'primeng/button'
 import { InputTextModule } from 'primeng/inputtext'
 import { type PartialDeep } from 'type-fest'
 import { createRegistrationSchema, Registration } from './contracts'
 import { EmailAddressAvailabilityChecker } from './email-address-availability-client.service'
-import { RegistrationEmailFieldsComponent } from './registration-email-fields.component'
+
 
 @Component({
   selector: 'tz-registration',
@@ -90,11 +90,9 @@ import { RegistrationEmailFieldsComponent } from './registration-email-fields.co
   `,
   imports: [
     ButtonModule,
-    RouterLink,
     InputTextModule,
     provideFormSchema(),
-    RegistrationEmailFieldsComponent
-  ]
+    ]
 })
 export default class RegistrationView {
   #router = inject(Router)

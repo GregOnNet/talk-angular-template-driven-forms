@@ -1,7 +1,7 @@
 import { JsonPipe } from '@angular/common'
 import { Component, computed, inject, signal, viewChild } from '@angular/core'
 import { NgForm } from '@angular/forms'
-import { Router, RouterLink } from '@angular/router'
+import { Router } from '@angular/router'
 import { provideFormSchema } from '@toolazon/forms'
 import { ButtonModule } from 'primeng/button'
 import { ButtonGroupModule } from 'primeng/buttongroup'
@@ -52,7 +52,6 @@ import { ProductCardComponent } from './product-card.component'
   `,
   imports: [
     ButtonModule,
-    RouterLink,
     ButtonGroupModule,
     ProductCardComponent,
     provideFormSchema(),
