@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Observable, of } from 'rxjs'
+import { map, Observable, of, timer } from 'rxjs'
 
 /*
  *
@@ -19,7 +19,7 @@ export class EmailAddressAvailabilityChecker {
     }
 
     if (candidate === 'taken.email@address.com') {
-      return of(false)
+      return timer(1000).pipe(map(() => false))
     }
 
     return of(true)

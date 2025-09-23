@@ -5,10 +5,10 @@ import {
   apply,
   Control,
   email,
-  FieldState,
   form,
   required,
   schema,
+  submit,
   validate,
   validateAsync
 } from '@angular/forms/signals'
@@ -72,7 +72,9 @@ const emailSchema = (emailAvailabilityChecker: EmailAddressAvailabilityChecker) 
             class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             [control]="registrationForm.email"
           />
-          @for (error of registrationForm.email().errors(); track error.kind) {
+          @if (registrationForm.email().pending()) {
+          <span class="text-gray-500 rounded mb-4"> ⌛ Checking email availability... </span>
+          } @for (error of registrationForm.email().errors(); track error.kind) {
           <span class="text-red-500 rounded mb-4">
             {{ error.message }}
           </span>
@@ -99,8 +101,10 @@ const emailSchema = (emailAvailabilityChecker: EmailAddressAvailabilityChecker) 
           />
         </fieldset>
         <button
-          type="submit"
-          class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+          type="button"
+          (click)="submit()"
+          [disabled]="registrationForm().submitting() || registrationForm().invalid()"
+          class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           Submit
         </button>
@@ -113,15 +117,13 @@ const emailSchema = (emailAvailabilityChecker: EmailAddressAvailabilityChecker) 
       <pre><code>
         Form Valid: {{ registrationForm().valid() ? '✅' : '❌' }}
         Form Touched: {{ registrationForm().touched() ? '✅' : '❌' }}
+        Form Submitting: {{ registrationForm().submitting() ? '⌛' : '' }}
       </code></pre>
     </div>
   `,
   imports: [Control, JsonPipe]
 })
 export class RegistrationViewComponent {
-  isRequired(field: FieldState<string, string>) {
-    return field.errors().some(error => error.kind === 'required')
-  }
   protected registrationModel = signal({
     firstName: '',
     lastName: '',
@@ -162,5 +164,19 @@ export class RegistrationViewComponent {
   constructor() {
     // Interact with writable signal via form that syncs to model value
     this.registrationForm.firstName().value.set('Alan')
+  }
+
+  protected async submit() {
+    await submit(
+      this.registrationForm,
+      value =>
+        new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve()
+          }, 5000)
+        })
+    )
+
+    this.registrationForm().reset()
   }
 }
