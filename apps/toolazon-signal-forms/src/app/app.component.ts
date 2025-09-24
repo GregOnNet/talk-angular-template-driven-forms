@@ -1,10 +1,8 @@
 import { Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
 
-import { RegistrationViewComponent } from './registration.view'
-
 @Component({
-  imports: [RouterModule, RegistrationViewComponent],
+  imports: [RouterModule],
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

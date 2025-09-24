@@ -14,6 +14,7 @@ import {
   validate,
   validateAsync
 } from '@angular/forms/signals'
+import { Router } from '@angular/router'
 import { EmailAddressAvailabilityChecker } from './email-address-availability-client.service'
 
 const emailSchema = (emailAvailabilityChecker: EmailAddressAvailabilityChecker) =>
@@ -108,11 +109,11 @@ const emailSchema = (emailAvailabilityChecker: EmailAddressAvailabilityChecker) 
         </fieldset>
         <button
           type="button"
-          (click)="submit()"
+          (click)="submitRegistration()"
           [disabled]="registrationForm().submitting() || registrationForm().invalid()"
           class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
-          Submit
+          Register
         </button>
       </form>
 
@@ -130,6 +131,8 @@ const emailSchema = (emailAvailabilityChecker: EmailAddressAvailabilityChecker) 
   imports: [Control, JsonPipe]
 })
 export class RegistrationViewComponent {
+  private router = inject(Router)
+
   protected registrationModel = signal({
     firstName: '',
     lastName: '',
@@ -140,6 +143,7 @@ export class RegistrationViewComponent {
 
   protected registrationForm = form(this.registrationModel, path => {
     const emailAvailabilityChecker = inject(EmailAddressAvailabilityChecker)
+
     required(path.firstName, { message: 'First name is required' })
     required(path.lastName, { message: 'Last name is required' })
 
@@ -176,7 +180,7 @@ export class RegistrationViewComponent {
     return field.hasProperty(REQUIRED)
   }
 
-  protected async submit() {
+  protected async submitRegistration() {
     await submit(
       this.registrationForm,
       value =>
@@ -188,5 +192,6 @@ export class RegistrationViewComponent {
     )
 
     this.registrationForm().reset()
+    await this.router.navigate(['/', 'shopping-list'])
   }
 }
